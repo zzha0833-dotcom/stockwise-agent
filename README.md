@@ -31,6 +31,7 @@ See [docs/architecture.md](docs/architecture.md) for system boundaries and safet
 - Canonical CSV upload and M5 subset preparation with Polars and Parquet.
 - Seasonal Naive, Croston SBA, and global LightGBM forecast tools.
 - Rolling-origin evaluation with WMAPE, MAE, MASE, interval coverage, and explicit fallback logs.
+- A fixed one-unit demand deadband prevents phantom fractional demand on intermittent SKU series.
 - Deterministic safety stock, reorder point, order quantity, cost, and fill-rate calculations.
 - LangGraph state, SQLite checkpointing, one-step reflection, and human interrupt/resume.
 - OpenAI-compatible LLM adapter with Pydantic validation, retry, numeric grounding, and mock mode.
@@ -96,6 +97,14 @@ stockwise prepare-m5 --source-dir data/raw/m5 --items 30
 
 For the portfolio evaluation, use `--items 100`. The importer selects `CA_1`, `TX_1`, and `WI_1` by default and creates a compressed Parquet subset.
 
+Run a reproducible M5 benchmark after preparing the subset:
+
+```powershell
+stockwise evaluate-m5 --items 30 --runs 3
+```
+
+Use `--items 100` for the formal portfolio benchmark. M5 and synthetic reports use separate artifact names.
+
 ## API
 
 - `GET /api/v1/health`
@@ -110,13 +119,15 @@ For the portfolio evaluation, use `--items 100`. The importer selects `CA_1`, `T
 
 ## Evaluation policy
 
-Forecast metrics and resume claims must come from a reproducible run. The repository intentionally contains no pre-filled performance claims. The generated result records include:
+Forecast metrics and resume claims must come from a reproducible run. The repository records only measured benchmark claims and keeps the generated result artifacts out of Git. Result records include:
 
 - WMAPE, MAE, MASE, interval coverage, and improvement over Seasonal Naive.
 - Agent fallback usage and approval rate.
 - Projected fill rate, order value, holding cost, and stockout cost under simulated inventory inputs.
 
-See [docs/resume-template.md](docs/resume-template.md) for wording that must only be completed after evaluation.
+See [docs/resume-template.md](docs/resume-template.md) for wording backed by the completed evaluation.
+
+Measured M5 methodology and results are documented in [docs/benchmark.md](docs/benchmark.md). Inventory outcome metrics in that benchmark remain simulated.
 
 ## Deployment
 

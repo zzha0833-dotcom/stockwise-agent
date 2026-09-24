@@ -57,6 +57,7 @@ def test_lightgbm_tool_runs_without_future_leakage(retail_frame):
     evaluation = output.evaluations[0]
     assert evaluation.folds_completed == 1
     assert evaluation.metrics.wmape >= 0
+    predictions = output.predictions[ModelName.LIGHTGBM_GLOBAL.value]["prediction"]
+    assert ((predictions == 0) | (predictions >= 1.0)).all()
     # A failure is recorded and falls back explicitly; it is never silently ignored.
     assert isinstance(evaluation.errors, list)
-

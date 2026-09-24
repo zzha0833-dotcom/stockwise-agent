@@ -114,6 +114,37 @@ def evaluate_demo(
         item_limit=items,
         seeds=list(range(42, 42 + runs)),
         output_dir=settings.artifact_dir / "evaluations",
+        dataset_label="synthetic",
+    )
+    typer.echo(json.dumps(result["aggregate"], indent=2))
+    typer.echo(result["html_path"])
+
+
+@app.command("evaluate-m5")
+def evaluate_m5(
+    items: int = typer.Option(30, min=1, max=100),
+    runs: int = typer.Option(3, min=1, max=5),
+) -> None:
+    """Evaluate a prepared M5 subset with reproducible seeds."""
+    settings = get_settings()
+    settings.sync_runs = True
+    service = StockWiseService(settings)
+    expected_name = f"M5 {items} item subset"
+    dataset = next(
+        (record for record in service.storage.list_datasets() if record.name == expected_name),
+        None,
+    )
+    if dataset is None:
+        raise typer.BadParameter(
+            f"No '{expected_name}' dataset is registered. Run prepare-m5 first."
+        )
+    result = evaluate_dataset(
+        service,
+        dataset_id=dataset.id,
+        item_limit=items,
+        seeds=list(range(42, 42 + runs)),
+        output_dir=settings.artifact_dir / "evaluations",
+        dataset_label="m5",
     )
     typer.echo(json.dumps(result["aggregate"], indent=2))
     typer.echo(result["html_path"])

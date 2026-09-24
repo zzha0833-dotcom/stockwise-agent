@@ -29,7 +29,12 @@ def evaluate_dataset(
     item_limit: int,
     seeds: list[int],
     output_dir: Path,
+    dataset_label: str = "dataset",
 ) -> dict[str, Any]:
+    dataset = service.storage.get_dataset(dataset_id)
+    if dataset is None:
+        raise KeyError(f"Unknown dataset: {dataset_id}")
+    profile = decode_json(dataset.profile_json)
     runs: list[dict[str, Any]] = []
     for seed in seeds:
         record = service.submit_run(
@@ -70,6 +75,12 @@ def evaluate_dataset(
         "approval_rate",
     ]
     aggregate: dict[str, Any] = {
+        "dataset_id": dataset_id,
+        "dataset_name": dataset.name,
+        "dataset_rows": profile.get("rows", 0),
+        "dataset_stores": profile.get("stores", 0),
+        "dataset_items": profile.get("items", 0),
+        "dataset_series": profile.get("series", 0),
         "runs": len(runs),
         "task_completion_rate": round(len(completed) / max(1, len(runs)), 4),
         "fallback_rate": round(sum(item["fallback_used"] for item in runs) / max(1, len(runs)), 4),
@@ -80,9 +91,19 @@ def evaluate_dataset(
         values = [float(item[key]) for item in completed if key in item]
         if values:
             aggregate[f"mean_{key}"] = round(mean(values), 6)
-    result = {"aggregate": aggregate, "runs": runs, "seeds": seeds}
+    result = {
+        "aggregate": aggregate,
+        "dataset_profile": profile,
+        "runs": runs,
+        "seeds": seeds,
+    }
     output_dir.mkdir(parents=True, exist_ok=True)
-    stem = f"evaluation_{item_limit}items"
+    safe_label = "".join(
+        character
+        for character in dataset_label.lower()
+        if character.isalnum() or character in "-_"
+    )
+    stem = f"evaluation_{safe_label}_{item_limit}items"
     json_path = output_dir / f"{stem}.json"
     html_path = output_dir / f"{stem}.html"
     json_path.write_text(json.dumps(result, indent=2), encoding="utf-8")
@@ -93,4 +114,3 @@ def evaluate_dataset(
         encoding="utf-8",
     )
     return {**result, "json_path": str(json_path), "html_path": str(html_path)}
-

@@ -14,6 +14,7 @@ from statsforecast.models import CrostonSBA, SeasonalNaive
 from stockwise.schemas import MetricSet, ModelEvaluation, ModelName
 
 KEYS = ["store_id", "item_id"]
+MINIMUM_DAILY_UNIT_FORECAST = 1.0
 
 
 @dataclass
@@ -167,6 +168,14 @@ def lightgbm_global_predict(
         mask = featured["date"] == current_date
         current_features = featured.loc[mask, FEATURES].fillna(0)
         predictions = np.clip(model.predict(current_features), 0, None)
+        # Demand is measured in discrete units. Tiny positive forecasts create
+        # systematic phantom demand on intermittent series, so apply a fixed,
+        # data-independent one-unit deadband rather than tuning on holdout labels.
+        predictions = np.where(
+            predictions < MINIMUM_DAILY_UNIT_FORECAST,
+            0.0,
+            predictions,
+        )
         featured.loc[mask, "sales"] = predictions
         working = featured[train.columns].copy()
         daily_output = featured.loc[mask, ["date", *KEYS]].copy()
