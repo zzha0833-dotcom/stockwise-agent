@@ -22,7 +22,7 @@ python -m pytest
 stockwise run-demo --items 8
 ```
 
-当前统一环境位于 `D:\software\miniconda3\envs\stockwise-agent`，项目目录中不再创建 `.venv`。
+环境文件会创建独立的 Python 3.12 `stockwise-agent` Conda 环境，项目目录中无需创建 `.venv`。
 
 分别启动后端与界面：
 

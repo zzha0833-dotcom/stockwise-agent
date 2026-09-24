@@ -40,7 +40,7 @@ See [docs/architecture.md](docs/architecture.md) for system boundaries and safet
 
 ## Quick start
 
-Requirements: Miniconda, Git, and approximately 2 GB free space for the development environment. The recommended local environment is `D:\software\miniconda3\envs\stockwise-agent` with Python 3.12.
+Requirements: Miniconda, Git, and approximately 2 GB free space for the development environment. The provided environment file creates an isolated `stockwise-agent` environment with Python 3.12.
 
 ```powershell
 conda env create -f environment.yml
