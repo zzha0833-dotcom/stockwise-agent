@@ -1,0 +1,61 @@
+[project]
+name = "stockwise-agent"
+version = "0.1.0"
+description = "Agentic retail demand forecasting and replenishment decision system"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = { text = "MIT" }
+authors = [{ name = "Zibo Zhao" }]
+dependencies = [
+  "fastapi>=0.115,<1",
+  "httpx>=0.27,<1",
+  "jinja2>=3.1,<4",
+  "langgraph>=0.2,<2",
+  "langgraph-checkpoint-sqlite>=2,<4",
+  "lightgbm>=4.5,<5",
+  "mlflow>=2.17,<4",
+  "numpy>=2.0,<3",
+  "openai>=1.50,<3",
+  "pandas>=2.2,<3",
+  "plotly>=5.24,<7",
+  "polars-lts-cpu>=1.32,<2",
+  "pyarrow>=18,<23",
+  "pydantic>=2.9,<3",
+  "pydantic-settings>=2.5,<3",
+  "python-multipart>=0.0.12,<1",
+  "scikit-learn>=1.5,<2",
+  "sqlmodel>=0.0.22,<1",
+  "statsforecast>=1.7,<3",
+  "streamlit>=1.40,<2",
+  "typer>=0.13,<1",
+  "uvicorn[standard]>=0.30,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.3,<10",
+  "pytest-cov>=6,<8",
+  "ruff>=0.8,<1",
+]
+
+[project.scripts]
+stockwise = "stockwise.cli:app"
+
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/stockwise"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --basetemp=.pytest-tmp"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["B008", "E501"]

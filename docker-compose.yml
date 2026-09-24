@@ -1,0 +1,36 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    env_file: .env
+    ports:
+      - "8000:8000"
+    volumes:
+      - stockwise-data:/app/data
+      - stockwise-artifacts:/app/artifacts
+      - stockwise-db:/app/state
+    environment:
+      STOCKWISE_DATABASE_URL: sqlite:////app/state/stockwise.db
+      STOCKWISE_CHECKPOINT_DB: /app/state/checkpoints.db
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    ports:
+      - "8501:8501"
+    environment:
+      STOCKWISE_API_URL: http://api:8000/api/v1
+    depends_on:
+      api:
+        condition: service_healthy
+volumes:
+  stockwise-data:
+  stockwise-artifacts:
+  stockwise-db:
+
