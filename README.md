@@ -77,16 +77,17 @@ streamlit run ui/app.py
 - API docs: <http://127.0.0.1:8000/docs>
 - Streamlit: <http://127.0.0.1:8501>
 
-The default `LLM_MODE=mock` needs no API key. For a live OpenAI-compatible endpoint:
+The default `LLM_MODE=mock` needs no API key. To use the current DeepSeek OpenAI-compatible endpoint, create a local `.env` and add your own key:
 
 ```dotenv
 LLM_MODE=api
-LLM_BASE_URL=https://api.openai.com/v1
+LLM_BASE_URL=https://api.deepseek.com
 LLM_API_KEY=replace-me
-LLM_MODEL=gpt-4.1-mini
+LLM_MODEL=deepseek-flash
+LLM_TIMEOUT_SECONDS=60
 ```
 
-Secrets are never stored in SQLite or logs.
+`deepseek-flash` is the model name shown in the current [DeepSeek API quick start](https://api-docs.deepseek.com/guides/harness). The adapter requests JSON output, validates it with Pydantic, retries transient failures, and uses a deterministic fallback if the live API is unavailable. Secrets are never stored in SQLite or logs.
 
 ## Canonical data schema
 

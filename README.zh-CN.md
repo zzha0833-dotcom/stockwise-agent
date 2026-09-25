@@ -48,7 +48,17 @@ $env:STOCKWISE_API_URL="http://127.0.0.1:8000/api/v1"
 streamlit run ui/app.py
 ```
 
-默认使用无需 API Key 的 mock 模式。需要真实模型时，在 `.env` 中填写兼容 OpenAI API 的地址、密钥和模型名称。
+默认使用无需 API Key 的 mock 模式。若要使用 DeepSeek，在本地 `.env` 中填写：
+
+```dotenv
+LLM_MODE=api
+LLM_BASE_URL=https://api.deepseek.com
+LLM_API_KEY=替换为你自己的密钥
+LLM_MODEL=deepseek-flash
+LLM_TIMEOUT_SECONDS=60
+```
+
+`deepseek-flash` 是 [DeepSeek 官方快速入门](https://api-docs.deepseek.com/guides/harness) 当前列出的模型名称。项目会请求 JSON 输出、使用 Pydantic 校验，并在接口超时、限流或格式错误时重试并回退到确定性方案。API Key 不会写入数据库、日志或 Git。
 
 ## 数据说明
 

@@ -54,6 +54,7 @@ class LLMService:
                         {"role": "user", "content": user},
                     ],
                     "temperature": 0,
+                    "max_tokens": 1200,
                 }
                 try:
                     response = client.chat.completions.create(
@@ -96,7 +97,9 @@ class LLMService:
             payload = self._json_completion(
                 system=(
                     "You are a forecasting experiment planner. Return one JSON object matching "
-                    "ExperimentPlan with models, backtest_folds, horizon, max_iterations and rationale."
+                    "ExperimentPlan with models, backtest_folds, horizon, max_iterations and rationale. "
+                    'Example JSON: {"models":["seasonal_naive"],"backtest_folds":3,'
+                    '"horizon":28,"max_iterations":1,"rationale":"brief reason"}.'
                 ),
                 user=json.dumps(prompt),
             )
@@ -120,7 +123,8 @@ class LLMService:
             payload = self._json_completion(
                 system=(
                     "Write a concise operational summary grounded only in the supplied evidence. "
-                    "Return JSON with a single 'summary' string. Do not create new numbers."
+                    "Return JSON with a single 'summary' string. Do not create new numbers. "
+                    'Example JSON: {"summary":"grounded summary using only supplied values"}.'
                 ),
                 user=json.dumps(evidence),
             )
@@ -155,4 +159,3 @@ def numbers_are_grounded(text: str, evidence: dict[str, Any]) -> bool:
     observed = {match for match in re.findall(r"-?\d+(?:\.\d+)?", json.dumps(evidence))}
     claimed = set(re.findall(r"-?\d+(?:\.\d+)?", text))
     return claimed.issubset(observed)
-
