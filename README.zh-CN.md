@@ -2,6 +2,22 @@
 
 StockWise 是一个面向零售需求预测与补货决策的 Agent 工程项目。系统不是聊天机器人，而是通过 LangGraph 编排数据校验、实验规划、模型回测、需求预测、库存计算、人工审批和报告生成。
 
+## 产品演示
+
+下列界面使用已处理的 M5 数据子集和 mock LLM 模式运行。预测指标由确定性评估工具计算；库存、提前期与成本为固定随机种子的模拟数据。
+
+**Agent 执行轨迹与人工审批中断**
+
+![Agent 工作流等待人工审批](docs/images/approval-workflow.png)
+
+**模型回测与未来 28 天预测**
+
+![模型回测对比与需求预测](docs/images/forecast-results.png)
+
+**审批后的补货建议与报告导出**
+
+![已审批的补货建议](docs/images/replenishment-results.png)
+
 ## 项目亮点
 
 - 使用 Seasonal Naive、Croston SBA 和 Global LightGBM 进行滚动回测与模型比较。

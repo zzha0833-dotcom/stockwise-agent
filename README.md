@@ -6,6 +6,22 @@ The project is designed as a portfolio-quality Agent Engineering case study. It 
 
 > Inventory, lead-time, and cost inputs are simulated with a fixed seed. M5 sales, price, and calendar data remain real upstream data when the M5 workflow is used.
 
+## Product demo
+
+The dashboard below runs against the prepared M5 subset in mock-LLM mode. Forecast metrics are calculated by deterministic evaluation tools; inventory values are fixed-seed simulations.
+
+**Agent execution and human approval gate**
+
+![Agent workflow paused for human approval](docs/images/approval-workflow.png)
+
+**Model backtest and 28-day forecast**
+
+![Backtest comparison and demand forecast](docs/images/forecast-results.png)
+
+**Approved replenishment recommendations and report exports**
+
+![Approved replenishment recommendations](docs/images/replenishment-results.png)
+
 ## Architecture
 
 ```mermaid
