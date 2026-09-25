@@ -31,12 +31,16 @@ class StockWiseService:
 
     def ensure_demo_dataset(self, *, items: int = 8, stores: int = 2) -> DatasetRecord:
         name = f"Synthetic retail demo {items}x{stores}"
-        for record in self.storage.list_datasets():
-            if record.name == name:
-                return record
+        existing = next(
+            (record for record in self.storage.list_datasets() if record.name == name), None
+        )
+        if existing is not None and Path(existing.path).exists():
+            return existing
         path = self.settings.data_dir / "processed" / f"synthetic_demo_{items}x{stores}.parquet"
         frame = generate_synthetic_retail_data(items=items, stores=stores)
         profile = write_dataset(frame, path)
+        if existing is not None:
+            return self.storage.update_dataset(existing.id, path=path, profile=profile)
         return self.storage.register_dataset(name=name, path=path, profile=profile)
 
     def register_dataset_file(self, *, name: str, path: Path) -> DatasetRecord:

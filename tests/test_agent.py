@@ -1,9 +1,21 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 from stockwise.schemas import ApprovalRequest, RunRequest, RunStatus
 from stockwise.service import StockWiseService
+
+
+def test_demo_dataset_repairs_a_stale_path(settings):
+    service = StockWiseService(settings)
+    dataset = service.ensure_demo_dataset(items=1, stores=1)
+    Path(dataset.path).unlink()
+
+    repaired = service.ensure_demo_dataset(items=1, stores=1)
+
+    assert repaired.id == dataset.id
+    assert Path(repaired.path).exists()
 
 
 def test_end_to_end_agent_pauses_and_resumes(settings):

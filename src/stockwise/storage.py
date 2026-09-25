@@ -97,6 +97,20 @@ class Storage:
         with Session(self.engine) as session:
             return session.get(DatasetRecord, dataset_id)
 
+    def update_dataset(
+        self, dataset_id: str, *, path: Path, profile: DatasetProfile
+    ) -> DatasetRecord:
+        with Session(self.engine) as session:
+            record = session.get(DatasetRecord, dataset_id)
+            if record is None:
+                raise KeyError(f"Unknown dataset: {dataset_id}")
+            record.path = str(path.resolve())
+            record.profile_json = profile.model_dump_json()
+            session.add(record)
+            session.commit()
+            session.refresh(record)
+            return record
+
     def create_run(self, request: RunRequest, run_id: str | None = None) -> RunRecord:
         record = RunRecord(
             id=run_id or uuid.uuid4().hex,
